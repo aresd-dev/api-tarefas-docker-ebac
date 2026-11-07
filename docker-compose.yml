@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      API_USER: "${API_USER:-admin}"
+      API_PASSWORD: "${API_PASSWORD:-senha123}"
+      DATABASE_PATH: /data/tarefas.db
+      WATCHFILES_FORCE_POLLING: "true"
+    volumes:
+      - ./main.py:/app/main.py:ro
+      - dados_tarefas:/data
+    command:
+      - uvicorn
+      - main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --reload
+      - --reload-dir
+      - /app
+
+volumes:
+  dados_tarefas:

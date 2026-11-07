@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "api-tarefas-docker"
+version = "1.0.0"
+description = "API FastAPI com SQLite, Docker Compose e Poetry"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+fastapi = "0.162.0"
+uvicorn = {version = "0.54.0", extras = ["standard"]}
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
