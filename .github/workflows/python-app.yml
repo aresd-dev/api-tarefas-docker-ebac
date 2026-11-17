@@ -40,7 +40,7 @@ jobs:
           docker run -d --name fastapi-ci -p 127.0.0.1:8000:8000 "$IMAGE_NAME"
           # Aguarda a inicialização; esgotar as tentativas faz o passo falhar.
           curl --fail --silent --show-error --retry 15 --retry-delay 2 \
-            --retry-connrefused --retry-max-time 60 --max-time 5 \
+            --retry-all-errors --retry-max-time 60 --max-time 5 \
             http://127.0.0.1:8000/openapi.json -o /tmp/openapi.json
           # Verifica uma rota real autenticada, e não apenas o processo ativo.
           curl --fail --silent --show-error --max-time 10 \
