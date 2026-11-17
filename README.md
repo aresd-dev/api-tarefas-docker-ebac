@@ -106,8 +106,25 @@ a consistência do arquivo de dependências. A API foi testada localmente com
 requisições HTTP para CRUD, autenticação, validação de entradas, paginação e
 ordenação. O reinício real do servidor confirmou a persistência no SQLite.
 
-O build e a execução em container ainda precisam ser verificados. Neste ambiente,
-o Docker Desktop falhou ao iniciar porque sua chave de instalação
-SOFTWARE\Docker Inc.\Docker Desktop não foi encontrada no registro do Windows.
-Após instalar ou reparar o Docker Desktop, execute os passos de build e testes
-acima para concluir essa verificação.
+## Integração contínua: testes e Docker
+
+O projeto utiliza **Python 3.12** (>=3.12,<3.13) e **Poetry 2.2.1**.
+O workflow `.github/workflows/python-app.yml` executa a cada push na `main`,
+em `ubuntu-latest`, nesta ordem:
+
+1. Checkout e instalação de Python e Poetry.
+2. Restauração do cache `~/.cache/pypoetry` com `actions/cache@v4`.
+   A chave inclui sistema operacional, Python, Poetry e hash de `poetry.lock`.
+   O cache é salvo após uma execução bem-sucedida e reutilizado quando a chave coincidir.
+3. `poetry install --no-root --no-interaction` e `poetry run pytest`.
+4. `docker build -f Dockerfile -t "$IMAGE_NAME" .`, com `IMAGE_NAME=fastapi-app:latest`.
+5. `docker run` e verificação HTTP de `/openapi.json` e `/tarefas` autenticado.
+6. Exibição dos logs e remoção do container, inclusive em caso de falha.
+
+Falhas nos testes, build, inicialização ou verificações fazem o job falhar.
+Não há publicação da imagem nem deploy. Uma execução vermelha sinaliza o erro;
+para bloquear merges, é necessário configurar este check como obrigatório
+nas regras de proteção da branch.
+
+O Docker local não é necessário para a execução do CI. Consulte os resultados
+na [aba Actions](https://github.com/aresd-dev/api-tarefas-docker-ebac/actions).
